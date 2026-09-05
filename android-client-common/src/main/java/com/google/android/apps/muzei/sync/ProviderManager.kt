@@ -25,7 +25,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
@@ -49,6 +48,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.nurik.roman.muzei.androidclientcommon.BuildConfig
 import java.util.concurrent.Executors
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Single threaded coroutine context used for all sync operations
@@ -169,7 +169,7 @@ class ProviderManager private constructor(private val context: Context)
             // try loading the next artwork with a slight delay
             nextArtworkJob?.cancel()
             nextArtworkJob = GlobalScope.launch {
-                delay(1000)
+                delay(1000.milliseconds)
                 if (nextArtworkJob?.isCancelled == false) {
                     nextArtwork()
                 }
@@ -235,9 +235,7 @@ class ProviderManager private constructor(private val context: Context)
             packageChangeFilter,
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ProviderChangedWorker.activeListeningStateChanged(context, true)
-        }
+        ProviderChangedWorker.activeListeningStateChanged(context, true)
         providerLiveData.observeForever(this)
         artworkLiveData.observeForever(artworkObserver)
         startArtworkLoad()
@@ -298,9 +296,7 @@ class ProviderManager private constructor(private val context: Context)
         context.contentResolver.unregisterContentObserver(contentObserver)
         ArtworkLoadWorker.cancelPeriodic(context)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            ProviderChangedWorker.activeListeningStateChanged(context, false)
-        }
+        ProviderChangedWorker.activeListeningStateChanged(context, false)
         context.unregisterReceiver(packageChangeReceiver)
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "ProviderManager is now inactive")

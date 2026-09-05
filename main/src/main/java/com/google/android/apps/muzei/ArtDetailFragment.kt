@@ -89,6 +89,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.nurik.roman.muzei.R
 import net.nurik.roman.muzei.databinding.ArtDetailFragmentBinding
+import kotlin.time.Duration.Companion.milliseconds
 
 val ArtDetailOpen = MutableStateFlow(false)
 
@@ -136,8 +137,7 @@ class ArtDetailFragment : Fragment(R.layout.art_detail_fragment) {
     private var deferResetViewport: Boolean = false
 
     private val showBackgroundImage by lazy {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
-                && requireActivity().isInMultiWindowMode
+        requireActivity().isInMultiWindowMode
     }
     private val metadataSlideDistance by lazy {
         TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 8f, resources.displayMetrics)
@@ -492,7 +492,7 @@ class ArtDetailFragment : Fragment(R.layout.art_detail_fragment) {
         updateLoadingSpinnerVisibility()
         unsetNextFakeLoading?.cancel()
         unsetNextFakeLoading = viewLifecycleOwner.lifecycleScope.launch {
-            delay(10000)
+            delay(10000.milliseconds)
             showFakeLoading = false
             updateLoadingSpinnerVisibility()
         }
@@ -507,7 +507,7 @@ class ArtDetailFragment : Fragment(R.layout.art_detail_fragment) {
             }
             if (showFakeLoading) {
                 showLoadingSpinner = viewLifecycleOwner.lifecycleScope.launch {
-                    delay(700)
+                    delay(700.milliseconds)
                     binding.imageLoadingIndicator.start()
                     binding.imageLoadingContainer.isVisible = true
                     var animator: ViewPropertyAnimator? = null

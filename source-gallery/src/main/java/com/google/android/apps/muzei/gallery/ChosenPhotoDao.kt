@@ -21,7 +21,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Binder
-import android.os.Build
 import android.provider.DocumentsContract
 import android.util.Log
 import androidx.paging.PagingSource
@@ -97,7 +96,7 @@ internal abstract class ChosenPhotoDao {
     }
 
     private fun persistUriAccess(context: Context, chosenPhoto: ChosenPhoto): Boolean {
-        chosenPhoto.isTreeUri = isTreeUri(chosenPhoto.uri)
+        chosenPhoto.isTreeUri = DocumentsContract.isTreeUri(chosenPhoto.uri)
         if (chosenPhoto.isTreeUri) {
             try {
                 context.contentResolver.takePersistableUriPermission(chosenPhoto.uri,
@@ -146,21 +145,6 @@ internal abstract class ChosenPhotoDao {
             }
         }
         return true
-    }
-
-    private fun isTreeUri(possibleTreeUri: Uri): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return DocumentsContract.isTreeUri(possibleTreeUri)
-        } else {
-            try {
-                // Prior to N we can't directly check if the URI is a tree URI, so we have to just try it
-                val treeDocumentId = DocumentsContract.getTreeDocumentId(possibleTreeUri)
-                return treeDocumentId?.isNotEmpty() == true
-            } catch (_: IllegalArgumentException) {
-                // Definitely not a tree URI
-                return false
-            }
-        }
     }
 
     @Throws(IOException::class)

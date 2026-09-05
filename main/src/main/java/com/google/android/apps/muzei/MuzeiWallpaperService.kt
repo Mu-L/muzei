@@ -72,6 +72,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.rbgrn.android.glwallpaperservice.GLWallpaperService
+import kotlin.time.Duration.Companion.milliseconds
 
 data class WallpaperSize(val width: Int, val height: Int)
 
@@ -115,7 +116,7 @@ class MuzeiWallpaperService : GLWallpaperService(), LifecycleOwner {
         }
         if (UserManagerCompat.isUserUnlocked(this)) {
             wallpaperLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_START)
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        } else
             unlockReceiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent) {
                     wallpaperLifecycle.handleLifecycleEvent(Lifecycle.Event.ON_START)
@@ -123,14 +124,12 @@ class MuzeiWallpaperService : GLWallpaperService(), LifecycleOwner {
                     unlockReceiver = null
                 }
             }
-            val filter = IntentFilter(Intent.ACTION_USER_UNLOCKED)
             ContextCompat.registerReceiver(
                 this,
                 unlockReceiver,
-                filter,
+                IntentFilter(Intent.ACTION_USER_UNLOCKED),
                 ContextCompat.RECEIVER_NOT_EXPORTED
             )
-        }
     }
 
     override val lifecycle: Lifecycle = wallpaperLifecycle
@@ -178,7 +177,7 @@ class MuzeiWallpaperService : GLWallpaperService(), LifecycleOwner {
                 doubleTapTimeout?.cancel()
                 val timeout = ViewConfiguration.getDoubleTapTimeout().toLong()
                 doubleTapTimeout = lifecycleScope.launch {
-                    delay(timeout)
+                    delay(timeout.milliseconds)
                     queueEvent {
                         validDoubleTap = false
                     }
@@ -400,7 +399,7 @@ class MuzeiWallpaperService : GLWallpaperService(), LifecycleOwner {
 
             cancelDelayedBlur()
             delayedBlur = lifecycleScope.launch {
-                delay(TEMPORARY_FOCUS_DURATION_MILLIS)
+                delay(TEMPORARY_FOCUS_DURATION_MILLIS.milliseconds)
                 queueEvent {
                     renderer.setIsBlurred(isBlurred = true, artDetailMode = false)
                 }

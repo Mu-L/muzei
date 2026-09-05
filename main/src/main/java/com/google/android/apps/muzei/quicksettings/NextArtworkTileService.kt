@@ -21,11 +21,9 @@ import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Intent
 import android.graphics.drawable.Icon
-import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.service.quicksettings.PendingIntentActivityWrapper
 import androidx.core.service.quicksettings.TileServiceCompat
 import androidx.lifecycle.Lifecycle
@@ -54,7 +52,6 @@ import net.nurik.roman.muzei.androidclientcommon.R as CommonR
  * In cases where Muzei is not activated, the tile also allows users to activate Muzei directly
  * from the tile
  */
-@RequiresApi(Build.VERSION_CODES.N)
 class NextArtworkTileService : TileService(), LifecycleOwner {
     private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
 
