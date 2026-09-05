@@ -41,6 +41,7 @@ import com.google.android.apps.muzei.settings.EffectsLockScreenOpen
 import com.google.android.apps.muzei.util.ImageBlurrer
 import com.google.android.apps.muzei.util.blur
 import com.google.android.apps.muzei.util.collectIn
+import com.google.android.apps.muzei.util.isReducedMotionEnabled
 import com.google.android.apps.muzei.util.roundMult4
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -117,7 +118,7 @@ class MuzeiRendererFragment : Fragment(), RenderController.Callbacks, MuzeiBlurR
     ): View? {
         val activityManager = requireContext().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
 
-        if (demoMode && activityManager.isLowRamDevice) {
+        if (demoMode && (activityManager.isLowRamDevice || requireContext().isReducedMotionEnabled)) {
             val dm = resources.displayMetrics
             var targetWidth = dm.widthPixels
             var targetHeight = dm.heightPixels

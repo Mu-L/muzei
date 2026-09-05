@@ -30,6 +30,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -57,6 +58,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -72,9 +75,11 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.google.android.apps.muzei.render.MuzeiRendererFragment
 import com.google.android.apps.muzei.util.AnimatedMuzeiLogo
+import com.google.android.apps.muzei.util.isReducedMotionEnabled
 import kotlinx.coroutines.delay
 import net.nurik.roman.muzei.BuildConfig
 import net.nurik.roman.muzei.R
+import kotlin.time.Duration.Companion.milliseconds
 import net.nurik.roman.muzei.androidclientcommon.R as CommonR
 
 class AboutActivity : AppCompatActivity() {
@@ -96,7 +101,7 @@ class AboutActivity : AppCompatActivity() {
                 MuzeiRendererFragment(
                     demoMode = true,
                     demoFocus = false,
-                    modifier = Modifier.graphicsLayer {
+                    modifier = Modifier.fillMaxSize().graphicsLayer {
                         alpha = animatedAlpha
                     }
                 )
@@ -146,12 +151,16 @@ class AboutActivity : AppCompatActivity() {
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            var started by rememberSaveable { mutableStateOf(false) }
+                            val startWithAnimationComplete =
+                                LocalInspectionMode.current || LocalContext.current.isReducedMotionEnabled
+                            var started by rememberSaveable {
+                                mutableStateOf(startWithAnimationComplete)
+                            }
                             LaunchedEffect(started) {
                                 if (!started) {
-                                    delay(250)
+                                    delay(250.milliseconds)
                                     visible = true
-                                    delay(1000)
+                                    delay(1000.milliseconds)
                                     started = true
                                 }
                             }

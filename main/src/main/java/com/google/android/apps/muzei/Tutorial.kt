@@ -61,7 +61,9 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -74,6 +76,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.apps.muzei.theme.AppTheme
+import com.google.android.apps.muzei.util.isReducedMotionEnabled
 import com.google.android.apps.muzei.util.plus
 import net.nurik.roman.muzei.R
 import kotlin.math.max
@@ -87,7 +90,7 @@ private const val TRANSLATE_TIME = 500
 @Composable
 fun Tutorial(
     modifier: Modifier = Modifier,
-    startWithAnimationComplete: Boolean = false,
+    startWithAnimationComplete: Boolean = LocalInspectionMode.current || LocalContext.current.isReducedMotionEnabled,
     onAnimationCompleted: () -> Unit = {},
     onClick: () -> Unit = {},
 ) {

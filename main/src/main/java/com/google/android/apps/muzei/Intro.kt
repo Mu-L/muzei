@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.Brush.Companion.linearGradient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -52,8 +53,10 @@ import androidx.compose.ui.unit.sp
 import com.google.android.apps.muzei.render.MuzeiRendererFragment
 import com.google.android.apps.muzei.theme.AppTheme
 import com.google.android.apps.muzei.util.AnimatedMuzeiLogo
+import com.google.android.apps.muzei.util.isReducedMotionEnabled
 import kotlinx.coroutines.delay
 import net.nurik.roman.muzei.R
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun Intro(
@@ -67,8 +70,9 @@ fun Intro(
     },
     onActivate: () -> Unit = {},
 ) {
-    val isPreview = LocalInspectionMode.current
-    var showActivate by rememberSaveable { mutableStateOf(isPreview) }
+    val startWithAnimationComplete =
+        LocalInspectionMode.current || LocalContext.current.isReducedMotionEnabled
+    var showActivate by rememberSaveable { mutableStateOf(startWithAnimationComplete) }
     val activateAlpha by animateFloatAsState(
         targetValue = if (showActivate) 1.0f else 0f,
         animationSpec = tween(500),
@@ -79,10 +83,10 @@ fun Intro(
         Layout(
             content = {
                 // Logo
-                var started by rememberSaveable { mutableStateOf(isPreview) }
+                var started by rememberSaveable { mutableStateOf(startWithAnimationComplete) }
                 LaunchedEffect(started) {
                     if (!started) {
-                        delay(1000)
+                        delay(1000.milliseconds)
                         started = true
                     }
                 }
